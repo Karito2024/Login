@@ -1,72 +1,88 @@
-import React, { useState } from 'react'
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { Alert, Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const LoginScreen = ({ navigation }: any) => {
-    //Estado para el usuario y contraseña
-    const [usuario, setUsuario] = useState('');
-    const [password, setPassword] = useState('');
+  const [usuario, setUsuario] = useState('');
+  const [password, setPassword] = useState('');
+  const [correo, setCorreo] = useState('');
 
-    //Función para validar y redirigir
-    const manejarLogin = () => {
-        if (!usuario || !password) {
-            Alert.alert('Error', 'Todos los campos son obligatorios');
-            return;
-        }
-        //Simular la autenticacion
-        if (usuario === 'admin' && password === '1234') {
-            navigation.navigate('Home', { user: usuario });
-        } else {
-            Alert.alert('Error', 'Credenciales incorrectas');
-        }
+  const manejarLogin = async () => {
+    if (!usuario || !password) {
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
     }
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Iniciar Sesion</Text>
 
-            <TextInput
-                style={styles.imput}
-                placeholder="Usuario"
-                value={usuario}
-                onChangeText={(text) => setUsuario(text)} />
-            <TextInput
-                style={styles.imput}
-                placeholder="Contraseña"
-                secureTextEntry={true}
-                value={password} 
-                onChangeText={(text) => setPassword(text)} />
-            <Button title='Ingresar' onPress={manejarLogin} />
-        </View>
-    )
-}
+    try {
+      const userData = await AsyncStorage.getItem('usuarios');
+      const usuarios = userData ? JSON.parse(userData) : [];//parsear el string a un objeto
+      const usuario = usuarios.find((u: any) => u.email === correo && u.password === password);
+      if (usuario) {
+        // Si el usuario existe, guardar la información en AsyncStorage y navegar a Home
+        await AsyncStorage.setItem('usuario', JSON.stringify(usuario));
+        navigation.navigate('Home', { user: usuario.nombre });
+      } else {
+        // Si el usuario no existe, mostrar un mensaje de error
+        Alert.alert('Error', 'Usuario o contraseña incorrectos');
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Error al iniciar sesión');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Iniciar Sesión</Text>
+
+      <TextInput
+        style={styles.imput}
+        placeholder="Usuario"
+        value={usuario}
+        onChangeText={setUsuario}
+      />
+      <TextInput
+        style={styles.imput}
+        placeholder="Contraseña"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <Button title="Ingresar" onPress={manejarLogin} />
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+        <Text style={styles.registerText}>¿No tienes cuenta?</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-        flex: 1,
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    imput: {
-        marginBottom: 10,
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 5,
-        borderColor: '#ccc',
-    },
-    button: {
-        marginTop: 20,
-        padding: 10,
-        backgroundColor: '#333',
-        borderRadius: 5,
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-})
+  container: {
+    padding: 20,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  imput: {
+    marginBottom: 10,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: '#ccc',
+  },
+  registerText: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#0066cc',
+    textDecorationLine: 'underline',
+  },
+});
 
-export default LoginScreen
+export default LoginScreen;
+// export default LoginScreen;

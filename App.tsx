@@ -5,11 +5,11 @@ import StackNavigator from './src/navigation/StackNavigator'
 
 const App = () => {
   return (
-   <GestureHandlerRootView style={{flex:1}}>
-   <NavigationContainer>
-    <StackNavigator/>
-   </NavigationContainer>
-   </GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <StackNavigator />
+      </NavigationContainer>
+    </GestureHandlerRootView>
   )
 }
 

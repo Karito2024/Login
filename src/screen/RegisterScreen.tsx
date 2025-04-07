@@ -28,7 +28,7 @@ const RegisterScreen = ({ navigation }: any) => {
             // Verificar si el correo ya existe en la lista de usuarios
             // Si existe, se muestra un mensaje de error y se detiene el registro
             if (existe) {
-                Alert.alert('eError', 'El correo ya existe');
+                Alert.alert('Error', 'El correo ya existe');
                 return;
             }
 

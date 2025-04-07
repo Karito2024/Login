@@ -19,7 +19,7 @@ const LoginScreen = ({ navigation }: any) => {
       const usuario = usuarios.find((u: any) => u.email === correo && u.password === password);
       if (usuario) {
         // Si el usuario existe, guardar la información en AsyncStorage y navegar a Home
-        await AsyncStorage.setItem('usuario', JSON.stringify(usuario));
+        await AsyncStorage.setItem('usuarios', JSON.stringify(usuario));
         navigation.navigate('Home', { user: usuario.nombre });
       } else {
         // Si el usuario no existe, mostrar un mensaje de error
